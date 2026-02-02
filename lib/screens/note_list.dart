@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../models/note.dart';
 import '../utils/database_helper.dart';
 import 'note_detail.dart';
@@ -132,14 +131,10 @@ class _NoteListState extends State<NoteList> {
   }
 
   void updateListView() {
-    final Future<Database> dbFuture = databaseHelper.database;
-    dbFuture.then((database) {
-      Future<List<Note>> noteListFuture = databaseHelper.getNoteList();
-      noteListFuture.then((noteList) {
-        setState(() {
-          this.noteList = noteList;
-          count = noteList.length;
-        });
+    databaseHelper.getNoteList().then((noteList) {
+      setState(() {
+        this.noteList = noteList;
+        count = noteList.length;
       });
     });
   }

@@ -17,6 +17,7 @@ class Note {
   int get color => _color;
   String get date => _date;
 
+  set id(int? newId) => _id = newId;
   set title(String newTitle) => _title = newTitle;
   set description(String newDescription) => _description = newDescription;
   set priority(int newPriority) => _priority = newPriority;

@@ -63,7 +63,7 @@ class _NoteDetailState extends State<NoteDetail> {
                   }).toList(),
                   style: Theme.of(context).textTheme.titleMedium,
                   value: dropDownStringItem,
-                  onChanged: (valueSelectedByUser) {
+                  onChanged: (String? valueSelectedByUser) {
                     setState(() {
                       dropDownStringItem = valueSelectedByUser!;
                     });
@@ -78,7 +78,7 @@ class _NoteDetailState extends State<NoteDetail> {
                   onChanged: (value) {
                     updateTitle();
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Title',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
@@ -94,7 +94,7 @@ class _NoteDetailState extends State<NoteDetail> {
                   onChanged: (value) {
                     updateDescription();
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),

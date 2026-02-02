@@ -1,19 +1,9 @@
-import 'dart:io';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import '../models/note.dart';
 
 class DatabaseHelper {
   static DatabaseHelper? _databaseHelper;
-  static Database? _database;
-
-  String noteTable = 'note_table';
-  String colId = 'id';
-  String colTitle = 'title';
-  String colDescription = 'description';
-  String colPriority = 'priority';
-  String colColor = 'color';
-  String colDate = 'date';
+  static List<Note> _notes = [];
+  static int _nextId = 1;
 
   DatabaseHelper._createInstance();
 
@@ -22,70 +12,35 @@ class DatabaseHelper {
     return _databaseHelper!;
   }
 
-  Future<Database> get database async {
-    _database ??= await initializeDatabase();
-    return _database!;
-  }
-
-  Future<Database> initializeDatabase() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = '${directory.path}notes.db';
-    var notesDatabase = await openDatabase(path, version: 1, onCreate: _createDb);
-    return notesDatabase;
-  }
-
-  void _createDb(Database db, int newVersion) async {
-    await db.execute('''
-      CREATE TABLE $noteTable(
-        $colId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $colTitle TEXT,
-        $colDescription TEXT,
-        $colPriority INTEGER,
-        $colColor INTEGER,
-        $colDate TEXT
-      )
-    ''');
-  }
-
-  Future<List<Map<String, dynamic>>> getNoteMapList() async {
-    Database db = await database;
-    var result = await db.query(noteTable, orderBy: '$colPriority ASC');
-    return result;
+  Future<List<Note>> getNoteList() async {
+    return _notes;
   }
 
   Future<int> insertNote(Note note) async {
-    Database db = await database;
-    var result = await db.insert(noteTable, note.toMap());
-    return result;
+    note.id = _nextId++;
+    _notes.add(note);
+    return note.id!;
   }
 
   Future<int> updateNote(Note note) async {
-    var db = await database;
-    var result = await db.update(noteTable, note.toMap(),
-        where: '$colId = ?', whereArgs: [note.id]);
-    return result;
+    int index = _notes.indexWhere((n) => n.id == note.id);
+    if (index != -1) {
+      _notes[index] = note;
+      return 1;
+    }
+    return 0;
   }
 
   Future<int> deleteNote(int id) async {
-    var db = await database;
-    int result = await db.rawDelete('DELETE FROM $noteTable WHERE $colId = $id');
-    return result;
+    int index = _notes.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      _notes.removeAt(index);
+      return 1;
+    }
+    return 0;
   }
 
   Future<int?> getCount() async {
-    Database db = await database;
-    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) from $noteTable');
-    int? result = Sqflite.firstIntValue(x);
-    return result;
-  }
-
-  Future<List<Note>> getNoteList() async {
-    var noteMapList = await getNoteMapList();
-    int count = noteMapList.length;
-    List<Note> noteList = <Note>[];
-    for (int i = 0; i < count; i++) {
-      noteList.add(Note.fromMapObject(noteMapList[i]));
-    }
-    return noteList;
+    return _notes.length;
   }
 }

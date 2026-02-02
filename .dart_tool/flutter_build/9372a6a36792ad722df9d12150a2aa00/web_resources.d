@@ -1,0 +1,1 @@
+ build/web/index.html build/web/manifest.json:  /home/bug/Desktop/note_taking_app/web/index.html /home/bug/Desktop/note_taking_app/web/manifest.json
